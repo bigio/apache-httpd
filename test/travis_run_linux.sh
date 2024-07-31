@@ -191,11 +191,11 @@ if ! test -v NO_TEST_FRAMEWORK; then
     fi
 fi
 
-if test \( -v TEST_SSL -o -v TEST_OPENSSL3 \) \
+if test \( -v TEST_SSL -o -v TEST_OPENSSL3 -o -v TEST_LIBRESSL \) \
         -a -f test/perl-framework/t/logs/error_log; then
     : -- Check OpenSSL version used by mod_ssl at compile- and run-time --
-    grep 'mod_ssl.*compiled against' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always 'OpenSSL/[^ ]*'
-    grep 'resuming normal operations' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always 'OpenSSL/[^ ]*'
+    grep 'mod_ssl.*compiled against' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always -E '(Libre|Open)SSL/[^ ]*'
+    grep 'resuming normal operations' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always -E '(Libre|Open)SSL/[^ ]*'
 fi
 
 if test -v TEST_SSL -a $RV -eq 0; then
