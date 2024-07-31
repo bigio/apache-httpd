@@ -68,6 +68,15 @@ if test -v TEST_OPENSSL3; then
     openssl version
 fi
 
+if test -v TEST_LIBRESSL; then
+    CONFIG="$CONFIG --with-ssl=$HOME/root/libressl"
+    # Temporarily set LD_RUN_PATH so that httpd/mod_ssl binaries pick
+    # up the custom LibreSSL build
+    export LD_RUN_PATH=$HOME/root/libressl/lib:$HOME/root/libressl/lib64
+    export PATH=$HOME/root/libressl/bin:$PATH
+    openssl version
+fi
+
 srcdir=$PWD
 
 if test -v TEST_VPATH; then
