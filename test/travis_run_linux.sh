@@ -97,6 +97,14 @@ if test -v TEST_OPENSSL3; then
    unset LD_RUN_PATH
 fi
 
+if test -v TEST_LIBRESSL; then
+   # Clear the library/run paths so that anything else run during
+   # testing is not forced to use the custom OpenSSL build; e.g. perl,
+   # php-fpm, ...
+   unset LD_LIBRARY_PATH
+   unset LD_RUN_PATH
+fi
+
 if test -v TEST_INSTALL; then
    make install
    pushd $PREFIX

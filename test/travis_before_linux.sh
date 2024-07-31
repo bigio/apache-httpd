@@ -89,7 +89,7 @@ if ! test -v SKIP_TESTING -o -v NO_TEST_FRAMEWORK; then
     # For OpenSSL 3.2+ testing, Apache::Test r1916067 is required, so
     # use a checkout of trunk until there is an updated CPAN release
     # with that revision.
-    if test -v TEST_OPENSSL3; then
+    if test \( -v TEST_OPENSSL3 -o -v TEST_LIBRESSL \) \
        svn co -q https://svn.apache.org/repos/asf/perl/Apache-Test/trunk test/perl-framework/Apache-Test
     fi
 fi
