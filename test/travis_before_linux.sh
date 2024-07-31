@@ -143,6 +143,39 @@ if test -v TEST_OPENSSL3; then
     fi
 fi
 
+if test -v TEST_LIBRESSL; then
+    # Build the requested version of LibreSSL if it's not already
+    # installed in the cached ~/root
+    if ! test -f $HOME/root/openssl-is-${TEST_LIBRESSL}; then
+        # Remove any previous install.
+        rm -rf $HOME/root/libressl
+
+        mkdir -p build/libressl
+        pushd build/libressl
+           curl -L "https://github.com/libressl/portable/releases/download/v${TEST_LIBRESSL}/libressl-${TEST_LIBRESSL}.tar.gz" |
+              tar -xzf -
+           cd libressl-${TEST_LIBRESSL}
+           # Build with RPATH so ./bin/openssl doesn't require $LD_LIBRARY_PATH
+           ./Configure --prefix=$HOME/root/libressl \
+                       shared no-tests ${OPENSSL_CONFIG} \
+                       '-Wl,-rpath=$(LIBRPATH)'
+           make $MFLAGS
+           make install_sw
+           touch $HOME/root/openssl-is-${TEST_LIBRESSL}
+       popd
+    fi
+
+    # Point APR/APR-util at the installed version of LibreSSL.
+    if test -v APU_VERSION; then
+        APU_CONFIG="${APU_CONFIG} --with-openssl=$HOME/root/libressl"
+    elif test -v APR_VERSION; then
+        APR_CONFIG="${APR_CONFIG} --with-openssl=$HOME/root/libressl"
+    else
+        : Non-system APR/APR-util must be used to build with LibreSSL to avoid mismatch with system libraries
+        exit 1
+    fi
+fi
+
 if test -v APR_VERSION; then
     install_apx apr ${APR_VERSION} "${APR_CONFIG}"
     ldd $HOME/root/apr-${APR_VERSION}/lib/libapr-?.so || true

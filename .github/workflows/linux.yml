@@ -306,6 +306,15 @@ jobs:
               APU_VERSION=1.6.3
               APU_CONFIG="--without-crypto"
           # -------------------------------------------------------------------------
+          - name: LibreSSL 3.9.2 -Werror
+            config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
+            notest-cflags: -Werror -O2
+            env: |
+              TEST_LIBRESSL=3.9.2
+              APR_VERSION=1.7.4
+              APU_VERSION=1.6.3
+              APU_CONFIG="--without-crypto"
+          # -------------------------------------------------------------------------
     runs-on: ubuntu-latest
     timeout-minutes: 30
     env:
