@@ -157,8 +157,7 @@ if test -v TEST_LIBRESSL; then
            cd libressl-${TEST_LIBRESSL}
            # Build with RPATH so ./bin/openssl doesn't require $LD_LIBRARY_PATH
            ./configure --prefix=$HOME/root/libressl \
-                       shared no-tests ${OPENSSL_CONFIG} \
-                       '-Wl,-rpath=$(LIBRPATH)'
+                       --disable-tests ${OPENSSL_CONFIG}
            make $MFLAGS
            make install_sw
            touch $HOME/root/openssl-is-${TEST_LIBRESSL}
