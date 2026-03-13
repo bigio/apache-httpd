@@ -337,7 +337,6 @@ jobs:
               APU_CONFIG="--without-crypto"
             pkgs: subversion
           # -------------------------------------------------------------------------
-    runs-on: ${{ matrix.os == '' && 'ubuntu-latest' || matrix.os }}
           - name: LibreSSL 4.2.1 -Werror
             config: --enable-mods-shared=most --enable-maintainer-mode --disable-md --disable-http2 --disable-ldap --disable-crypto
             notest-cflags: -Werror -O2
