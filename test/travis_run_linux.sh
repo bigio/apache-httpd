@@ -67,6 +67,15 @@ if test -v TEST_OPENSSL3; then
     openssl version
 fi
 
+if test -v TEST_LIBRESSL; then
+    CONFIG="$CONFIG --with-ssl=$HOME/root/libressl"
+    # Temporarily set LD_RUN_PATH so that httpd/mod_ssl binaries pick
+    # up the custom LibreSSL build
+    export LD_RUN_PATH=$HOME/root/libressl/lib:$HOME/root/libressl/lib64
+    export PATH=$HOME/root/libressl/bin:$PATH
+    openssl version
+fi
+
 srcdir=$PWD
 
 if test -v TEST_VPATH; then
@@ -80,6 +89,14 @@ $srcdir/configure --prefix=$PREFIX $CONFIG
 make $MFLAGS
 
 if test -v TEST_OPENSSL3; then
+   # Clear the library/run paths so that anything else run during
+   # testing is not forced to use the custom OpenSSL build; e.g. perl,
+   # php-fpm, ...
+   unset LD_LIBRARY_PATH
+   unset LD_RUN_PATH
+fi
+
+if test -v TEST_LIBRESSL; then
    # Clear the library/run paths so that anything else run during
    # testing is not forced to use the custom OpenSSL build; e.g. perl,
    # php-fpm, ...
@@ -195,11 +212,11 @@ if ! test -v NO_TEST_FRAMEWORK; then
     fi
 fi
 
-if test \( -v TEST_SSL -o -v TEST_OPENSSL3 \) \
+if test \( -v TEST_SSL -o -v TEST_OPENSSL3 -o -v TEST_LIBRESSL \) \
         -a -f test/perl-framework/t/logs/error_log; then
     : -- Check OpenSSL version used by mod_ssl at compile- and run-time --
-    grep 'mod_ssl.*compiled against' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always 'OpenSSL/[^ ]*'
-    grep 'resuming normal operations' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always 'OpenSSL/[^ ]*'
+    grep 'mod_ssl.*compiled against' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always -E '(Libre|Open)SSL/[^ ]*'
+    grep 'resuming normal operations' test/perl-framework/t/logs/error_log | tail -n1 | grep --color=always -E '(Libre|Open)SSL/[^ ]*'
 fi
 
 if test -v TEST_SSL -a $RV -eq 0; then
