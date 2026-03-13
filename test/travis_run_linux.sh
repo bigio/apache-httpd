@@ -69,10 +69,9 @@ fi
 
 if test -v TEST_LIBRESSL; then
     CONFIG="$CONFIG --with-ssl=$HOME/root/libressl"
-    # Temporarily set LD_RUN_PATH so that httpd/mod_ssl binaries pick
-    # up the custom LibreSSL build
-    export LD_RUN_PATH=$HOME/root/libressl/lib:$HOME/root/libressl/lib64
     export PATH=$HOME/root/libressl/bin:$PATH
+    # Force everything built to hard-code an RPATH
+    export LDFLAGS="-Wl,-rpath,$HOME/root/libressl/lib -Wl,-rpath,$HOME/root/libressl/lib64"
     openssl version
 fi
 
